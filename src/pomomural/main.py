@@ -146,6 +146,15 @@ def _get_mural_pois_mock():
         ),
     ]
 
+def get_gmaps_url(poi, center) -> str:
+    # %2C is comma
+    cent = f"{center[1]}%2C{center[0]}"
+    dest = f"{poi['lat']}%2C{poi['lon']}"
+    url = f"https://www.google.com/maps/dir/?api=1&origin={cent}&destination={dest}"
+    # DEBUG
+    # print(f'{url=}')
+    return url
+
 def find_nearest_mural(
     center=None,
     profile='foot-walking',
@@ -167,6 +176,7 @@ def find_nearest_mural(
     for poi, dist, dur in zip(pois, dists, durs):
         poi['dist'] = dist
         poi['dur'] = dur
+        poi['gmaps_url'] = get_gmaps_url(poi, center)
     pois = sorted(pois, key=lambda x: x.get('dur', 1e8), reverse=False)
     return pois
 
@@ -243,6 +253,7 @@ async def submit_form():
         profile=profile,
     )[:settings.MAX_RESULTS]
     # ui.notify(results)
+    # DEBUG
     print(f"Found {len(results)} results: {results}")
 
     # Render results
