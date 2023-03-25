@@ -1,3 +1,4 @@
+import csv
 import re
 import asyncio
 from time import sleep
@@ -88,9 +89,47 @@ async def resolve_starting_loc_input(query: str):
         name=name,
     )
 
+
 # TODO
 # @memoize(cache_dir='/tmp/memoize')
 def get_mural_pois():
+    with open(settings.MURAL_CSV_FP, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        rows = list(reader)[1:]
+    parsed = [
+        dict(
+            id=int(row[0]),
+            artist=row[1],
+            title=row[2],
+            name=row[2],
+            media=row[3],
+            year_inst=int(row[4]) if row[4] else None,
+            year_rest=row[5],
+            loc_desc=row[6],
+            addr=row[7],
+            zip=row[8],
+            ward=int(row[9]),
+            aff_org=row[10],
+            desc=row[11],
+            comm_areas=row[12],
+            lat=float(row[13]),
+            lon=float(row[14]),
+            loc=row[15],
+            # TODO
+            img_url='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.theculturetrip.com%2Fwp-content%2Fuploads%2F2016%2F12%2Fgt_chicago.jpg&f=1&nofb=1&ipt=b28a0928ecd49643db0fc18b1ba1d79d6370c97f12dcf9830f01fa96f14d6915&ipo=images',
+        )
+        for row in rows
+    ]
+    # TODO: form Google Maps URL
+    return parsed
+
+# TODO
+# @memoize(cache_dir='/tmp/memoize')
+def _get_mural_pois_mock():
+    with open(settings.MURAL_CSV_FP, newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for row in spamreader:
+            print(', '.join(row))
     # TODO
     return [
         dict(
