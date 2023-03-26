@@ -1,4 +1,5 @@
 import csv
+import requests
 from pprint import pprint
 from memoize import memoize
 import openrouteservice
@@ -146,8 +147,26 @@ def _test_parse_mural_registry():
         for row in rows
     ]
 
+def _test_get_divvy_locs():
+    url = 'https://gbfs.divvybikes.com/gbfs/en/free_bike_status.json'
+    resp = requests.get(url)
+    bikes = resp.json()['data']['bikes']
+    bike = bikes[0]
+    # {'bike_id': 'b1eead00baebddf6a35483c3a62394ce',
+    # 'fusion_lat': 0,
+    # 'fusion_lon': 0,
+    # 'is_disabled': 0,
+    # 'is_reserved': 0,
+    # 'lat': 41.910975933,
+    # 'lon': -87.653251171,
+    # 'name': 'b1eead00baebddf6a35483c3a62394ce',
+    # 'rental_uris': {'android': 'https://chi.lft.to/lastmile_qr_scan',
+    #                 'ios': 'https://chi.lft.to/lastmile_qr_scan'},
+    # 'type': 'electric_bike'}
+    breakpoint()
+
 if __name__ == '__main__':
     # _test_otm_distance_matrix()
-    _test_get_geocode_circular()
+    # _test_get_geocode_circular()
     # _test_parse_mural_registry()
-    # breakpoint()
+    _test_get_divvy_locs()
