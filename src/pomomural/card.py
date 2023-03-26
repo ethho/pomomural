@@ -36,7 +36,7 @@ class LargeCard(ui.card):
         self.display()
 
     def display(self) -> None:
-        with self.props('draggable').classes('bg-gray-200 w-80 h-80 p-8 rounded shadow cursor-pointer'):
+        with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 700px; height: 500px;'):
             self.name = ui.label(self.location_dict["name"])
             #ui.label(self.location_dict["artist"]).style("font-size:10pt;")
             #ui.label(self.location_dict["addr"]).style("font-size:10pt;")
@@ -44,16 +44,15 @@ class LargeCard(ui.card):
             #ui.image(self.location_dict["image_url"])
             #ui.image(self.location_dict["maps_url"])
 
-            with ui.image('https://picsum.photos/id/29/640/360') as self.image:
+            with ui.image(self.location_dict['img_url']).classes('absolute-left').style('height: 70%; top: 30%;') as self.image:
                 self.caption = ui.label(self.location_dict['name']).classes('absolute-bottom text-subtitle2 text-center')
+        # self.update()
 
     def update_card(self,location_dict):
         self.location_dict = location_dict
         self.name.text = location_dict["name"]
         self.markdown.set_content(util.get_time_from_seconds(location_dict["dur"]))
-
-        # TODO
-        # self.image.set_source()
+        self.image.set_source(location_dict['img_url'])
         self.caption.set_text(location_dict['name'])
 
         self.name.update()
@@ -65,10 +64,10 @@ class LargeCard(ui.card):
 class CardStructure():
     def __init__(self,results) -> None:
         self.results_list = results
+        self.top_card = LargeCard(self.results_list[0], 0)
         with ui.row():
             self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
-        self.top_card = LargeCard(self.results_list[0], 0)
-        self.container = ui.row()
+        # self.container = ui.row()
 
     def set_top(self,card) -> None:
         display = False
