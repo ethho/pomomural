@@ -1,6 +1,7 @@
 import csv
 import re
 import asyncio
+import requests
 from time import sleep
 from nicegui import ui
 from memoize import memoize
@@ -146,11 +147,20 @@ def _get_mural_pois_mock():
         ),
     ]
 
-def get_gmaps_url(poi, center) -> str:
+def get_gmaps_url(poi, center, profile) -> str:
     # %2C is comma
     cent = f"{center[1]}%2C{center[0]}"
     dest = f"{poi['lat']}%2C{poi['lon']}"
-    url = f"https://www.google.com/maps/dir/?api=1&origin={cent}&destination={dest}"
+
+    # Get travelmode
+    if profile == 'foot-walking':
+        tmode = 'walking'
+    elif profile == 'cycling-regular':
+        tmode = 'walking'
+    else:
+        raise Exception(f"Disallowed {profile=}")
+
+    url = f"https://www.google.com/maps/dir/?api=1&origin={cent}&destination={dest}&travelmode={tmode}"
     # DEBUG
     # print(f'{url=}')
     return url
@@ -176,7 +186,7 @@ def find_nearest_mural(
     for poi, dist, dur in zip(pois, dists, durs):
         poi['dist'] = dist
         poi['dur'] = dur
-        poi['gmaps_url'] = get_gmaps_url(poi, center)
+        poi['gmaps_url'] = get_gmaps_url(poi, center, profile)
     pois = sorted(pois, key=lambda x: x.get('dur', 1e8), reverse=False)
     return pois
 
