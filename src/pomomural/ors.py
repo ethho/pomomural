@@ -123,29 +123,33 @@ def _test_parse_mural_registry():
     with open(settings.MURAL_CSV_FP, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         rows = list(reader)[1:]
-    return [
+    parsed = [
         dict(
-            id=row[0],
+            id=int(row[0]),
             artist=row[1],
             title=row[2],
+            name=row[2],
             media=row[3],
-            year_inst=row[4],
+            year_inst=int(row[4]) if row[4] else None,
             year_rest=row[5],
             loc_desc=row[6],
             addr=row[7],
             zip=row[8],
-            ward=row[9],
+            ward=int(row[9]),
             aff_org=row[10],
             desc=row[11],
             comm_areas=row[12],
-            lat=row[13],
-            lon=row[14],
+            lat=float(row[13]),
+            lon=float(row[14]),
             loc=row[15],
             # TODO
             img_url='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.theculturetrip.com%2Fwp-content%2Fuploads%2F2016%2F12%2Fgt_chicago.jpg&f=1&nofb=1&ipt=b28a0928ecd49643db0fc18b1ba1d79d6370c97f12dcf9830f01fa96f14d6915&ipo=images',
         )
         for row in rows
     ]
+    # TODO: form Google Maps URL
+    breakpoint()
+    return parsed
 
 def _test_get_divvy_locs():
     url = 'https://gbfs.divvybikes.com/gbfs/en/free_bike_status.json'
@@ -168,5 +172,6 @@ def _test_get_divvy_locs():
 if __name__ == '__main__':
     # _test_otm_distance_matrix()
     # _test_get_geocode_circular()
-    # _test_parse_mural_registry()
-    _test_get_divvy_locs()
+    reg = _test_parse_mural_registry()
+    # breakpoint()
+    # _test_get_divvy_locs()
