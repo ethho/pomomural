@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 from typing import Optional
@@ -25,11 +24,11 @@ class LargeCard(ui.card):
         self.location_dict = location_dict
 
     def display(self) -> None:
-        with self.props('draggable').classes('bg-gray-200 w-80 h-80 p-16 rounded shadow cursor-pointer'):
-            ui.button(self.location_dict["name"])
+        with self.props('draggable').classes('bg-gray-200 w-80 h-80 p-8 rounded shadow cursor-pointer'):
+            ui.label(self.location_dict["name"])
             #ui.label(self.location_dict["artist"]).style("font-size:10pt;")
             #ui.label(self.location_dict["addr"]).style("font-size:10pt;")
-            #ui.markdown("Time taken to reach : ",util.get_time_from_seconds(self.location_dict["dur"]))
+            ui.markdown(util.get_time_from_seconds(self.location_dict["dur"]))
             #ui.image(self.location_dict["image_url"])
             #ui.image(self.location_dict["maps_url"])        
                 
@@ -43,10 +42,14 @@ class CardStructure():
 
     def set_top(self,card,idx) -> None:
         self.top_card = LargeCard(self.results_list[idx])
-        self.container.clear
+        try:
+            self.container.remove(0)
+        except:
+            pass
         print("Container cleared")
-        with self.container:
-            self.top_card.display()
+        if self.top_card is not None:
+            with self.container:
+                self.top_card.display()
 
     def display(self) -> None:   
         with ui.column():
