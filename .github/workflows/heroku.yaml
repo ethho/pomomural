@@ -17,4 +17,4 @@ jobs:
           heroku_email: "ethanho@uchicago.edu"
           usedocker: true
         env:
-          HD_ORS_KEY: ${{secrets.OPENROUTESERVICE_KEY}}
+          HD_ORS_KEY: ${{secrets.ORS_KEY}}
