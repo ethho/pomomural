@@ -39,7 +39,7 @@ class LargeCard(ui.card):
 
     def display(self) -> None:
         time = util.get_time_from_seconds(self.location_dict["dur"])
-        with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 700px; height: 500px;'):
+        with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 600px; height: 600px;'):
             self.name = ui.label(self.location_dict["name"])
             self.artist = ui.label(self.location_dict["artist"]).style("font-size:10pt;")
             self.addr = ui.label(self.location_dict["addr"]).style("font-size:10pt;")
