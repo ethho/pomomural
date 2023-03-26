@@ -5,6 +5,7 @@ from nicegui import ui
 from memoize import memoize
 from settings import settings
 from ors import get_geocode_circular, get_otm_distance_matrix
+from card import Card,LargeCard,CardStructure
 
 async def get_location_from_browser(
     *args,
@@ -133,6 +134,10 @@ def find_nearest_mural(
 
 def render_results(results):
     return render_results_as_table(results)
+   
+def render_results_as_card(results):
+    structure = CardStructure(results)
+    return
 
 def render_results_as_table(results):
     columns = [
