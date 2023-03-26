@@ -190,6 +190,35 @@ def find_nearest_mural(
     pois = sorted(pois, key=lambda x: x.get('dur', 1e8), reverse=False)
     return pois
 
+def get_divvy_locs():
+    # TODO
+    return []
+
+def find_nearest_divvy(
+    center=None,
+    profile='foot-walking',
+):
+    # Get Divvy bike coordinates for destination
+    bikes = get_divvy_locs()
+    dests = [(item['lon'], item['lat']) for item in bikes]
+    # Salonica by default
+    center = center if center is not None else (-87.59042435642392, 41.79237034197231)
+    raw = get_otm_distance_matrix(
+        origin=center,
+        dests=dests,
+        profile=profile,
+    )
+    dists = raw['distances'][0]
+    durs = raw['durations'][0]
+    if not dists or not durs:
+        raise Exception(f'Found no routes to Divvy bikes from {center=}')
+    for bike, dist, dur in zip(bikes, dists, durs):
+        bike['dist'] = dist
+        bike['dur'] = dur
+        bike['gmaps_url'] = get_gmaps_url(bike, center, profile)
+    bikes = sorted(bikes, key=lambda x: x.get('dur', 1e8), reverse=False)
+    return bikes
+
 def render_results(results):
     return render_results_as_table(results)
 
