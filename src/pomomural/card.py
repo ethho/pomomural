@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from settings import settings
 
 from typing import Optional
 
@@ -43,8 +44,8 @@ class LargeCard(ui.card):
             self.markdown = ui.markdown(util.get_time_from_seconds(self.location_dict["dur"]))
             #ui.image(self.location_dict["image_url"])
             #ui.image(self.location_dict["maps_url"])
-
-            with ui.image(self.location_dict['img_url']).classes('absolute-left').style('height: 70%; top: 30%;') as self.image:
+            # print(self.location_dict['img_url'])
+            with ui.image(self.location_dict['img_url']).classes('absolute-left').style('height: 80%; top: 20%;') as self.image:
                 self.caption = ui.label(self.location_dict['name']).classes('absolute-bottom text-subtitle2 text-center')
         # self.update()
 
@@ -52,6 +53,7 @@ class LargeCard(ui.card):
         self.location_dict = location_dict
         self.name.text = location_dict["name"]
         self.markdown.set_content(util.get_time_from_seconds(location_dict["dur"]))
+        print(location_dict['img_url'])
         self.image.set_source(location_dict['img_url'])
         self.caption.set_text(location_dict['name'])
 
@@ -64,9 +66,10 @@ class LargeCard(ui.card):
 class CardStructure():
     def __init__(self,results) -> None:
         self.results_list = results
-        self.top_card = LargeCard(self.results_list[0], 0)
         with ui.row():
-            self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
+            self.top_card = LargeCard(self.results_list[0], 0)
+            with ui.column():
+                self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
         # self.container = ui.row()
 
     def set_top(self,card) -> None:

@@ -118,7 +118,7 @@ def get_mural_pois():
             lon=float(row[14]),
             loc=row[15],
             # dalle_img_url=row[16],
-            img_url=row[17],
+            img_url=row[17] if row[17] else settings.NOT_FOUND_IMG,
             # img_url='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.theculturetrip.com%2Fwp-content%2Fuploads%2F2016%2F12%2Fgt_chicago.jpg&f=1&nofb=1&ipt=b28a0928ecd49643db0fc18b1ba1d79d6370c97f12dcf9830f01fa96f14d6915&ipo=images',
         )
         for row in rows
@@ -192,7 +192,7 @@ def find_nearest_mural(
         raise Exception(f'Found no routes from {center=}')
     for poi, dist, dur in zip(pois, dists, durs):
         poi['dist'] = dist
-        poi['dur'] = dur
+        poi['dur'] = dur * 2
         poi['gmaps_url'] = get_gmaps_url(poi, center, profile)
     pois = sorted(pois, key=lambda x: x.get('dur', 1e8), reverse=False)
     return pois
@@ -331,9 +331,9 @@ invisible_label.profile_id = 0
 # Body content
 ui.markdown('''Plan a walk/ride to a nearby public art piece during your Pomodoro break!\n\n----\n\n''').style('width: 80%;')
 ui.label('How long is your break?')
-with ui.row().style('width: 100%;'):
-    slider = ui.slider(min=5, max=60, value=30).props('color=orange').classes('col')
-    ui.label().bind_text_from(slider, 'value', backward=lambda x: f"{x} minutes").classes('col q-pt-xs q-pl-xs')
+# with ui.row().style('width: 100%;'):
+#     slider = ui.slider(min=5, max=60, value=30).props('color=orange').classes('col')
+#     ui.label().bind_text_from(slider, 'value', backward=lambda x: f"{x} minutes").classes('col q-pt-xs q-pl-xs')
 with ui.row():
     ui.label('I want to').classes('q-pt-sm')
     profile_radio = ui.radio({
