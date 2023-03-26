@@ -1,5 +1,7 @@
+import csv
 import re
 import asyncio
+import requests
 from time import sleep
 from nicegui import ui
 from memoize import memoize
@@ -89,9 +91,47 @@ async def resolve_starting_loc_input(query: str):
         name=name,
     )
 
+
 # TODO
 # @memoize(cache_dir='/tmp/memoize')
 def get_mural_pois():
+    with open(settings.MURAL_CSV_FP, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        rows = list(reader)[1:]
+    parsed = [
+        dict(
+            id=int(row[0]),
+            artist=row[1],
+            title=row[2],
+            name=row[2],
+            media=row[3],
+            year_inst=int(row[4]) if row[4] else None,
+            year_rest=row[5],
+            loc_desc=row[6],
+            addr=row[7],
+            zip=row[8],
+            ward=int(row[9]),
+            aff_org=row[10],
+            desc=row[11],
+            comm_areas=row[12],
+            lat=float(row[13]),
+            lon=float(row[14]),
+            loc=row[15],
+            # TODO
+            img_url='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.theculturetrip.com%2Fwp-content%2Fuploads%2F2016%2F12%2Fgt_chicago.jpg&f=1&nofb=1&ipt=b28a0928ecd49643db0fc18b1ba1d79d6370c97f12dcf9830f01fa96f14d6915&ipo=images',
+        )
+        for row in rows
+    ]
+    # TODO: form Google Maps URL
+    return parsed
+
+# TODO
+# @memoize(cache_dir='/tmp/memoize')
+def _get_mural_pois_mock():
+    with open(settings.MURAL_CSV_FP, newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for row in spamreader:
+            print(', '.join(row))
     # TODO
     return [
         dict(
@@ -107,6 +147,24 @@ def get_mural_pois():
             lat=42.59662527196502,
         ),
     ]
+
+def get_gmaps_url(poi, center, profile) -> str:
+    # %2C is comma
+    cent = f"{center[1]}%2C{center[0]}"
+    dest = f"{poi['lat']}%2C{poi['lon']}"
+
+    # Get travelmode
+    if profile == 'foot-walking':
+        tmode = 'walking'
+    elif profile == 'cycling-regular':
+        tmode = 'walking'
+    else:
+        raise Exception(f"Disallowed {profile=}")
+
+    url = f"https://www.google.com/maps/dir/?api=1&origin={cent}&destination={dest}&travelmode={tmode}"
+    # DEBUG
+    # print(f'{url=}')
+    return url
 
 def find_nearest_mural(
     center=None,
@@ -129,8 +187,38 @@ def find_nearest_mural(
     for poi, dist, dur in zip(pois, dists, durs):
         poi['dist'] = dist
         poi['dur'] = dur
+        poi['gmaps_url'] = get_gmaps_url(poi, center, profile)
     pois = sorted(pois, key=lambda x: x.get('dur', 1e8), reverse=False)
     return pois
+
+def get_divvy_locs():
+    # TODO
+    return []
+
+def find_nearest_divvy(
+    center=None,
+    profile='foot-walking',
+):
+    # Get Divvy bike coordinates for destination
+    bikes = get_divvy_locs()
+    dests = [(item['lon'], item['lat']) for item in bikes]
+    # Salonica by default
+    center = center if center is not None else (-87.59042435642392, 41.79237034197231)
+    raw = get_otm_distance_matrix(
+        origin=center,
+        dests=dests,
+        profile=profile,
+    )
+    dists = raw['distances'][0]
+    durs = raw['durations'][0]
+    if not dists or not durs:
+        raise Exception(f'Found no routes to Divvy bikes from {center=}')
+    for bike, dist, dur in zip(bikes, dists, durs):
+        bike['dist'] = dist
+        bike['dur'] = dur
+        bike['gmaps_url'] = get_gmaps_url(bike, center, profile)
+    bikes = sorted(bikes, key=lambda x: x.get('dur', 1e8), reverse=False)
+    return bikes
 
 def render_results(results):
     return render_results_as_table(results)
@@ -209,6 +297,7 @@ async def submit_form():
         profile=profile,
     )[:settings.MAX_RESULTS]
     # ui.notify(results)
+    # DEBUG
     print(f"Found {len(results)} results: {results}")
 
     # Render results
