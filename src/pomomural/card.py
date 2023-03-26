@@ -26,7 +26,7 @@ class Card(ui.card):
             with ui.row():
                 self.select_button = ui.button(on_click =lambda: self.ptr.set_top(self)).props('icon=check').classes('w-6 h-6 bg-green absolute-left')
                 ui.label(self.location_dict["name"]).classes('q-ml-xl')
-                ui.label(util.get_time_from_seconds(self.location_dict["dur"]))
+            ui.label(util.get_time_from_seconds(self.location_dict["dur"]))
             # ui.button('Select', on_click =lambda: self.ptr.set_top(self))
 
     def select(self):
@@ -46,7 +46,7 @@ class LargeCard(ui.card):
 
     def display(self) -> None:
         time = util.get_time_from_seconds(self.location_dict["dur"])
-        with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 600px; height: 720px;'):
+        with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 520px; height: 590px;'):
 
             with ui.row():
                 self.name = ui.html(f"<b>{self.location_dict['name']}</b>")
@@ -98,7 +98,7 @@ class CardStructure():
             self.top_card = LargeCard(self.results_list[0], 0, lat=lat, lon=lon)
             with ui.column():
                 self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
-        # self.container = ui.row()
+        self.card_list[self.top_card.idx].select()
 
     def set_top(self,card) -> None:
         display = False

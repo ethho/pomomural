@@ -356,7 +356,7 @@ results_row.update()
 # Header
 with ui.header(elevated=True).style('background-color: #3874c8; background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.inyourpocket.com%2Fgallery%2Fpisa%2F2020%2F02%2FKeith%2520Haring%27s%2520Tuttomondo%2520Mural-1.jpg&f=1&nofb=1&ipt=377a590a023b15027d4114a17993a41eea4ee78fbf1af7315265762d502a129c&ipo=images");').classes('items-center justify-between'):
     # ui.label('HEADER')
-    ui.label('PomoMural.me').style('color: #fe9ffa; font-size: 17pt;')
+    ui.label('PomoMural').style('color: #fe9ffa; font-size: 17pt;')
     ui.button(text='Menu', on_click=lambda: right_drawer.toggle()).props('flat color=white icon=menu')
 
 # Right drawer
@@ -372,11 +372,13 @@ with ui.right_drawer(value=False, fixed=False).style('background-color: #ebf1fa;
         '- [Chicago Mural Registry](https://www.chicago.gov/city/en/depts/dca/supp_info/mural_registry1.html)\n'
         '- [NiceGUI](https://nicegui.io/)\n'
         '- [Heroku](https://www.heroku.com/github-students)\n'
+        '- [wttr.in](https://github.com/chubin/wttr.in)\n'
     )
     ui.markdown(
         '#### Authors\n\n'
         '- [Ethan Ho](https://github.com/ethho/)\n'
         '- [Ajay Sailopal](https://github.com/Ajay-26)\n'
+        '- [Brian Whitehouse](https://github.com/btwhitehouse2)\n'
     )
 
 # Footer
