@@ -166,6 +166,11 @@ def get_gmaps_url(poi, center, profile) -> str:
     # print(f'{url=}')
     return url
 
+def get_current_weather(latitude_colname,longitude_colname):
+    currWeather = requests.get("https://wttr.in/%s,%s?0pQT"%(latitude_colname,longitude_colname))
+    return currWeather.text
+
+
 def find_nearest_mural(
     center=None,
     profile='foot-walking',
@@ -222,7 +227,7 @@ def find_nearest_divvy(
 
 def render_results(results):
     return render_results_as_table(results)
-   
+
 def render_results_as_card(results):
     structure = CardStructure(results)
     return
@@ -303,6 +308,13 @@ async def submit_form():
     # Render results
     render_results(results)
 
+    # Fetch current weather
+    cur_weather = get_current_weather(lat,lon)
+    ui.label('Weather').tooltip('Get Current Weather for your mural')
+    with ui.button('Current Weather').props('icon=cloud'):
+        with ui.tooltip("").classes('bg=purple'):
+            ui.markdown(cur_weather)
+
 # Quasar color scheme
 ui.colors(
     primary='green',
@@ -360,6 +372,7 @@ with ui.right_drawer(value=False, fixed=False).style('background-color: #ebf1fa;
     ui.markdown(
         '#### Tools & Data Sources\n\n'
         '- [Chicago Data Portal](https://data.cityofchicago.org/)\n'
+        '- [Chicago Mural Registry](https://www.chicago.gov/city/en/depts/dca/supp_info/mural_registry1.html)\n'
         '- [NiceGUI](https://nicegui.io/)\n'
         '- [Heroku](https://www.heroku.com/github-students)\n'
     )
