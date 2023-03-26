@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
 from typing import Optional
@@ -16,7 +17,7 @@ class Card(ui.card):
 
     def display(self) -> None:
         with self.props('draggable').classes('bg-gray-200 w-48 p-4 rounded shadow cursor-pointer'):
-            ui.button(self.location_dict["name"], on_click =lambda: self.ptr.set_top(self,self.idx))
+            ui.button(self.location_dict["name"], on_click =lambda: self.ptr.set_top(self))
 
 class LargeCard(ui.card):
     def __init__(self,location_dict) -> None:
@@ -35,21 +36,20 @@ class LargeCard(ui.card):
 class CardStructure():
     def __init__(self,results) -> None:
         self.results_list = results
-        with ui.column():
+        with ui.row():
             self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
         self.top_card = None
         self.container = ui.row()
 
-    def set_top(self,card,idx) -> None:
-        self.top_card = LargeCard(self.results_list[idx])
+    def set_top(self,card) -> None:
+        self.top_card = LargeCard(self.results_list[card.idx])
         try:
-            self.container.remove(0)
+            self.top_card.clear
         except:
             pass
         print("Container cleared")
         if self.top_card is not None:
-            with self.container:
-                self.top_card.display()
+            self.top_card.display()
 
     def display(self) -> None:   
         with ui.column():
