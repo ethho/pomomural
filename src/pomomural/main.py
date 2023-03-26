@@ -315,76 +315,85 @@ ui.colors(
     accent='blue',
 )
 
-# We use an invisible label to pass shared state variables
-invisible_label = ui.label()
-invisible_label.profile_id = 0
+@ui.page('/')
+def index_page():
+    # ui.label('Hello, world!')
+    # We use an invisible label to pass shared state variables
+    global invisible_label
+    invisible_label = ui.label()
+    invisible_label.profile_id = 0
 
-# Body content
-ui.markdown('''Plan a walk/ride to a nearby public art piece during your Pomodoro break!\n\n----\n\n''').style('width: 80%;')
+    # Body content
+    ui.markdown('''Plan a walk/ride to a nearby public art piece during your Pomodoro break!\n\n----\n\n''').style('width: 80%;')
 
-# ui.label('How long is your break?')
-# with ui.row().style('width: 100%;'):
-#     slider = ui.slider(min=5, max=60, value=30).props('color=orange').classes('col')
-#     ui.label().bind_text_from(slider, 'value', backward=lambda x: f"{x} minutes").classes('col q-pt-xs q-pl-xs')
+    # ui.label('How long is your break?')
+    # with ui.row().style('width: 100%;'):
+    #     slider = ui.slider(min=5, max=60, value=30).props('color=orange').classes('col')
+    #     ui.label().bind_text_from(slider, 'value', backward=lambda x: f"{x} minutes").classes('col q-pt-xs q-pl-xs')
 
-with ui.row():
-    ui.label('I want to').classes('q-pt-sm')
-    profile_radio = ui.radio({
-        1: 'Walk',
-        2: 'Bike',
-    }, value=1).props('inline color=light-green-6')
-starting_loc_input = ui.input(
-    label='Enter starting location (optional)',
-    placeholder='Examples: Polsky Exchange North, 1103 E 57th St., (41.7964,-87.5985)',
-    # on_change=lambda e: result.set_text('you typed: ' + e.value),
-    # validation={'Input too long': lambda value: len(value) < 20},
-).style('width: 80%')
-ui.button('find nearest mural', on_click=submit_form).props('color=purple-5')
-with ui.dialog() as dialog, ui.card():
-    ui.label('Finding a mural near you...')
-    ui.spinner('dots', size='xl', color='default').props('color=deep-purple').classes('q-ml-xl')
+    global profile_radio
+    with ui.row():
+        ui.label('I want to').classes('q-pt-sm')
+        profile_radio = ui.radio({
+            1: 'Walk',
+            2: 'Bike',
+        }, value=1).props('inline color=light-green-6')
+    global starting_loc_input
+    starting_loc_input = ui.input(
+        label='Enter starting location (optional)',
+        placeholder='Examples: Polsky Exchange North, 1103 E 57th St., (41.7964,-87.5985)',
+        # on_change=lambda e: result.set_text('you typed: ' + e.value),
+        # validation={'Input too long': lambda value: len(value) < 20},
+    ).style('width: 80%')
+    ui.button('find nearest mural', on_click=submit_form).props('color=purple-5')
+    global dialog
+    with ui.dialog() as dialog, ui.card():
+        ui.label('Finding a mural near you...')
+        ui.spinner('dots', size='xl', color='default').props('color=deep-purple').classes('q-ml-xl')
 
-results_ui_expansion = ui.expansion('All Nearby Murals', icon='drag_indicator').classes('w-full hidden')
-results_ui_expansion.clear()
-results_ui_expansion.update()
-results_row = ui.row().classes('hidden').style('width: 100%;')
-results_row.clear()
-results_row.update()
+    global results_ui_expansion
+    results_ui_expansion = ui.expansion('All Nearby Murals', icon='drag_indicator').classes('w-full hidden')
+    results_ui_expansion.clear()
+    results_ui_expansion.update()
+    global results_row
+    results_row = ui.row().classes('hidden').style('width: 100%;')
+    results_row.clear()
+    results_row.update()
 
-# TODO: pretty animation for starting location placeholder text
+    # TODO: pretty animation for starting location placeholder text
 
-# Header
-with ui.header(elevated=True).style('background-color: #3874c8; background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.inyourpocket.com%2Fgallery%2Fpisa%2F2020%2F02%2FKeith%2520Haring%27s%2520Tuttomondo%2520Mural-1.jpg&f=1&nofb=1&ipt=377a590a023b15027d4114a17993a41eea4ee78fbf1af7315265762d502a129c&ipo=images");').classes('items-center justify-between'):
-    # ui.label('HEADER')
-    ui.label('PomoMural').style('color: #fe9ffa; font-size: 17pt;')
-    ui.button(text='Menu', on_click=lambda: right_drawer.toggle()).props('flat color=white icon=menu')
+    # Header
+    with ui.header(elevated=True).style('background-color: #3874c8; background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.inyourpocket.com%2Fgallery%2Fpisa%2F2020%2F02%2FKeith%2520Haring%27s%2520Tuttomondo%2520Mural-1.jpg&f=1&nofb=1&ipt=377a590a023b15027d4114a17993a41eea4ee78fbf1af7315265762d502a129c&ipo=images");').classes('items-center justify-between'):
+        # ui.label('HEADER')
+        ui.label('PomoMural').style('color: #fe9ffa; font-size: 17pt;')
+        ui.button(text='Menu', on_click=lambda: right_drawer.toggle()).props('flat color=white icon=menu')
 
-# Right drawer
-with ui.right_drawer(value=False, fixed=False).style('background-color: #ebf1fa; background-image: none;').props('bordered') as right_drawer:
-    ui.markdown(
-        '#### Links\n\n'
-        '- [PomoMural GitHub](https://github.com/ethho/pomomural)\n'
-        '- [Uncommon Hacks 2023](https://github.com/ethho/pomomural)\n'
-    )
-    ui.markdown(
-        '#### Tools & Data Sources\n\n'
-        '- [Chicago Data Portal](https://data.cityofchicago.org/)\n'
-        '- [Chicago Mural Registry](https://www.chicago.gov/city/en/depts/dca/supp_info/mural_registry1.html)\n'
-        '- [NiceGUI](https://nicegui.io/)\n'
-        '- [Heroku](https://www.heroku.com/github-students)\n'
-        '- [wttr.in](https://github.com/chubin/wttr.in)\n'
-    )
-    ui.markdown(
-        '#### Authors\n\n'
-        '- [Ethan Ho](https://github.com/ethho/)\n'
-        '- [Ajay Sailopal](https://github.com/Ajay-26)\n'
-        '- [Brian Whitehouse](https://github.com/btwhitehouse2)\n'
-    )
+    # Right drawer
+    with ui.right_drawer(value=False, fixed=False).style('background-color: #ebf1fa; background-image: none;').props('bordered') as right_drawer:
+        ui.markdown(
+            '#### Links\n\n'
+            '- [PomoMural GitHub](https://github.com/ethho/pomomural)\n'
+            '- [Uncommon Hacks 2023](https://github.com/ethho/pomomural)\n'
+        )
+        ui.markdown(
+            '#### Tools & Data Sources\n\n'
+            '- [Chicago Data Portal](https://data.cityofchicago.org/)\n'
+            '- [Chicago Mural Registry](https://www.chicago.gov/city/en/depts/dca/supp_info/mural_registry1.html)\n'
+            '- [NiceGUI](https://nicegui.io/)\n'
+            '- [Heroku](https://www.heroku.com/github-students)\n'
+            '- [wttr.in](https://github.com/chubin/wttr.in)\n'
+        )
+        ui.markdown(
+            '#### Authors\n\n'
+            '- [Ethan Ho](https://github.com/ethho/)\n'
+            '- [Ajay Sailopal](https://github.com/Ajay-26)\n'
+            '- [Brian Whitehouse](https://github.com/btwhitehouse2)\n'
+        )
 
-# Footer
-with ui.footer().style('background-color: #3874c8; background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.inyourpocket.com%2Fgallery%2Fpisa%2F2020%2F02%2FKeith%2520Haring%27s%2520Tuttomondo%2520Mural-1.jpg&f=1&nofb=1&ipt=377a590a023b15027d4114a17993a41eea4ee78fbf1af7315265762d502a129c&ipo=images");'):
-    # ui.label('FOOTER')
-    pass
+    # Footer
+    with ui.footer().style('background-color: #3874c8; background-image: url("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs.inyourpocket.com%2Fgallery%2Fpisa%2F2020%2F02%2FKeith%2520Haring%27s%2520Tuttomondo%2520Mural-1.jpg&f=1&nofb=1&ipt=377a590a023b15027d4114a17993a41eea4ee78fbf1af7315265762d502a129c&ipo=images");'):
+        # ui.label('FOOTER')
+        pass
 
 # Kick off async processes that cache
 get_mural_pois()
