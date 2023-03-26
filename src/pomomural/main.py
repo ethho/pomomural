@@ -92,8 +92,7 @@ async def resolve_starting_loc_input(query: str):
     )
 
 
-# TODO
-# @memoize(cache_dir='/tmp/memoize')
+@memoize(cache_dir='/tmp/memoize')
 def get_mural_pois():
     with open(settings.MURAL_CSV_FP, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -158,7 +157,7 @@ def get_gmaps_url(poi, center, profile) -> str:
     if profile == 'foot-walking':
         tmode = 'walking'
     elif profile == 'cycling-regular':
-        tmode = 'walking'
+        tmode = 'bicycling'
     else:
         raise Exception(f"Disallowed {profile=}")
 
@@ -166,10 +165,6 @@ def get_gmaps_url(poi, center, profile) -> str:
     # DEBUG
     # print(f'{url=}')
     return url
-
-def get_current_weather(latitude_colname,longitude_colname):
-    currWeather = requests.get("https://wttr.in/%s,%s?0pQT"%(latitude_colname,longitude_colname))
-    return currWeather.text
 
 
 def find_nearest_mural(
@@ -226,12 +221,15 @@ def find_nearest_divvy(
     bikes = sorted(bikes, key=lambda x: x.get('dur', 1e8), reverse=False)
     return bikes
 
-def render_results(results):
-    return render_results_as_card(results)
+def render_results(results, **kw):
+    return render_results_as_card(results, **kw)
     # return render_results_as_table(results)
 
-def render_results_as_card(results):
-    structure = CardStructure(results)
+def render_results_as_card(results, lat=None, lon=None):
+    results_row.clear()
+    results_row.classes(remove='hidden')
+    with results_row:
+        structure = CardStructure(results, lat=lat, lon=lon)
     return
 
 def render_results_as_table(results):
@@ -305,17 +303,10 @@ async def submit_form():
     )[:settings.MAX_RESULTS]
     # ui.notify(results)
     # DEBUG
-    print(f"Found {len(results)} results: {results}")
+    # print(f"Found {len(results)} results: {results}")
 
     # Render results
-    render_results(results)
-
-    # Fetch current weather
-    cur_weather = get_current_weather(lat,lon)
-    ui.label('Weather').tooltip('Get Current Weather for your mural')
-    with ui.button('Current Weather').props('icon=cloud'):
-        with ui.tooltip("").classes('bg=purple'):
-            ui.markdown(cur_weather)
+    render_results(results, lat=lat, lon=lon)
 
 # Quasar color scheme
 ui.colors(
@@ -330,10 +321,12 @@ invisible_label.profile_id = 0
 
 # Body content
 ui.markdown('''Plan a walk/ride to a nearby public art piece during your Pomodoro break!\n\n----\n\n''').style('width: 80%;')
-ui.label('How long is your break?')
+
+# ui.label('How long is your break?')
 # with ui.row().style('width: 100%;'):
 #     slider = ui.slider(min=5, max=60, value=30).props('color=orange').classes('col')
 #     ui.label().bind_text_from(slider, 'value', backward=lambda x: f"{x} minutes").classes('col q-pt-xs q-pl-xs')
+
 with ui.row():
     ui.label('I want to').classes('q-pt-sm')
     profile_radio = ui.radio({
@@ -354,7 +347,9 @@ with ui.dialog() as dialog, ui.card():
 results_ui_expansion = ui.expansion('All Nearby Murals', icon='drag_indicator').classes('w-full hidden')
 results_ui_expansion.clear()
 results_ui_expansion.update()
-
+results_row = ui.row().classes('hidden').style('width: 100%;')
+results_row.clear()
+results_row.update()
 
 # TODO: pretty animation for starting location placeholder text
 
