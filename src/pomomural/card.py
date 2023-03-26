@@ -42,14 +42,13 @@ class CardStructure():
         self.container = ui.row()
 
     def set_top(self,card) -> None:
-        self.top_card = LargeCard(self.results_list[card.idx])
-        try:
+        display = False
+        if self.top_card == None:
+            display = True
+        if display == False:
             self.top_card.clear
-        except:
-            pass
-        print("Container cleared")
-        if self.top_card is not None:
-            self.top_card.display()
+        self.top_card = LargeCard(self.results_list[card.idx])
+        self.top_card.display()
 
     def display(self) -> None:   
         with ui.column():
