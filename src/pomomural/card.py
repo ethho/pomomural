@@ -16,12 +16,22 @@ class Card(ui.card):
         self.display()
 
     def display(self) -> None:
-        with self.props('draggable').classes('bg-gray-200 w-48 p-4 rounded shadow cursor-pointer'):
-            ui.button(self.location_dict["name"], on_click =lambda: self.ptr.set_top(self))
+        with self.props('draggable').classes('bg-gray-200 w-40 h-35 p-4 rounded shadow cursor-pointer'):
+            with ui.row():
+                self.select_button = ui.button(on_click =lambda: self.ptr.set_top(self)).props('icon=check').classes('w-6 h-6 bg-green absolute-left')
+                ui.label(self.location_dict["name"]).classes('q-ml-xl')
+            # ui.button('Select', on_click =lambda: self.ptr.set_top(self))
+
+    def select(self):
+        self.select_button.classes(add='bg-orange', remove='bg-green')
+
+    def deselect(self):
+        self.select_button.classes(add='bg-green', remove='bg-orange')
 
 class LargeCard(ui.card):
-    def __init__(self,location_dict) -> None:
+    def __init__(self,location_dict, idx) -> None:
         super().__init__()
+        self.idx = idx
         self.location_dict = location_dict
         self.display()
 
@@ -34,19 +44,22 @@ class LargeCard(ui.card):
             #ui.image(self.location_dict["image_url"])
             #ui.image(self.location_dict["maps_url"])
 
+            with ui.image('https://picsum.photos/id/29/640/360') as self.image:
+                self.caption = ui.label(self.location_dict['name']).classes('absolute-bottom text-subtitle2 text-center')
+
     def update_card(self,location_dict):
         self.location_dict = location_dict
         self.name.text = location_dict["name"]
-        # self.markdown.text = util.get_time_from_seconds(location_dict["dur"])
-        # self.markdown.text = location_dict["dur"]
         self.markdown.set_content(util.get_time_from_seconds(location_dict["dur"]))
 
-        # DEBUG
-        # print(f"{location_dict=}")
-        # print(f"{self.location_dict=}")
+        # TODO
+        # self.image.set_source()
+        self.caption.set_text(location_dict['name'])
 
         self.name.update()
         self.markdown.update()
+        self.image.update()
+        self.caption.update()
 
 
 class CardStructure():
@@ -54,16 +67,20 @@ class CardStructure():
         self.results_list = results
         with ui.row():
             self.card_list = [Card(result,self,idx) for idx,result in enumerate(self.results_list)]
-        self.top_card = LargeCard(self.results_list[0])
+        self.top_card = LargeCard(self.results_list[0], 0)
         self.container = ui.row()
 
     def set_top(self,card) -> None:
         display = False
+        self.card_list[self.top_card.idx].deselect() # deselect current
+        # print(f"{self.top_card.idx=}")
         if self.top_card == None:
             display = True
             self.top_card.display()
         if display == False:
             self.top_card.update_card(self.results_list[card.idx])
+            self.top_card.idx = card.idx
+        self.card_list[card.idx].select() # select new
 
     def display(self) -> None:
         with ui.column():
