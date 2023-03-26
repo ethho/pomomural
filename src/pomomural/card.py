@@ -20,6 +20,7 @@ class Card(ui.card):
             with ui.row():
                 self.select_button = ui.button(on_click =lambda: self.ptr.set_top(self)).props('icon=check').classes('w-6 h-6 bg-green absolute-left')
                 ui.label(self.location_dict["name"]).classes('q-ml-xl')
+                ui.label(util.get_time_from_seconds(self.location_dict["dur"]))
             # ui.button('Select', on_click =lambda: self.ptr.set_top(self))
 
     def select(self):
@@ -36,11 +37,12 @@ class LargeCard(ui.card):
         self.display()
 
     def display(self) -> None:
+        time = util.get_time_from_seconds(self.location_dict["dur"])
         with self.props('draggable').classes('bg-gray-100 w-40 h-40 p-4 rounded shadow cursor-pointer').style('width: 700px; height: 500px;'):
             self.name = ui.label(self.location_dict["name"])
-            #ui.label(self.location_dict["artist"]).style("font-size:10pt;")
-            #ui.label(self.location_dict["addr"]).style("font-size:10pt;")
-            self.markdown = ui.markdown(util.get_time_from_seconds(self.location_dict["dur"]))
+            self.artist = ui.label(self.location_dict["artist"]).style("font-size:10pt;")
+            self.addr = ui.label(self.location_dict["addr"]).style("font-size:10pt;")
+            self.markdown = ui.markdown(f"Time taken to reach: {time}")
             #ui.image(self.location_dict["image_url"])
             #ui.image(self.location_dict["maps_url"])
 
@@ -51,7 +53,10 @@ class LargeCard(ui.card):
     def update_card(self,location_dict):
         self.location_dict = location_dict
         self.name.text = location_dict["name"]
-        self.markdown.set_content(util.get_time_from_seconds(location_dict["dur"]))
+        self.artist.text = location_dict["artist"]
+        self.addr.text = location_dict["addr"]
+        time = util.get_time_from_seconds(location_dict["dur"])
+        self.markdown.set_content(f"Time taken to reach: {time}")
         self.image.set_source(location_dict['img_url'])
         self.caption.set_text(location_dict['name'])
 
@@ -59,6 +64,8 @@ class LargeCard(ui.card):
         self.markdown.update()
         self.image.update()
         self.caption.update()
+        self.artist.update()
+        self.addr.update()
 
 
 class CardStructure():
