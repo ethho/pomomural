@@ -7,4 +7,5 @@ RUN apt-get -y update && \
 ADD requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 ADD src/pomomural /app
+ADD data/mural.csv /app/data/mural.csv
 CMD ["python3", "/app/main.py"]
