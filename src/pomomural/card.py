@@ -32,11 +32,18 @@ class LargeCard(ui.card):
             #ui.label(self.location_dict["addr"]).style("font-size:10pt;")
             self.markdown = ui.markdown(util.get_time_from_seconds(self.location_dict["dur"]))
             #ui.image(self.location_dict["image_url"])
-            #ui.image(self.location_dict["maps_url"])        
-    
+            #ui.image(self.location_dict["maps_url"])
+
     def update_card(self,location_dict):
+        self.location_dict = location_dict
         self.name.text = location_dict["name"]
-        self.markdown.text = util.get_time_from_seconds(location_dict["dur"])
+        # self.markdown.text = util.get_time_from_seconds(location_dict["dur"])
+        # self.markdown.text = location_dict["dur"]
+        self.markdown.set_content(util.get_time_from_seconds(location_dict["dur"]))
+
+        # DEBUG
+        # print(f"{location_dict=}")
+        # print(f"{self.location_dict=}")
 
         self.name.update()
         self.markdown.update()
@@ -54,11 +61,11 @@ class CardStructure():
         display = False
         if self.top_card == None:
             display = True
+            self.top_card.display()
         if display == False:
             self.top_card.update_card(self.results_list[card.idx])
-        self.top_card.display()
 
-    def display(self) -> None:   
+    def display(self) -> None:
         with ui.column():
             for c in self.card_list:
                 c.display()

@@ -226,7 +226,8 @@ def find_nearest_divvy(
     return bikes
 
 def render_results(results):
-    return render_results_as_table(results)
+    return render_results_as_card(results)
+    # return render_results_as_table(results)
 
 def render_results_as_card(results):
     structure = CardStructure(results)
